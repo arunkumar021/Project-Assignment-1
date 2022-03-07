@@ -12,7 +12,11 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    tasks: [{
+        name: String,
+        status: String
+    }]
 })
 
 module.exports = mongoose.model('User' , userSchema)
