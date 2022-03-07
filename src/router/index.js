@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import LoginView from '../views/LoginView.vue';
 import DashboardView from '../views/DashboardView.vue';
+import store from '@/store';
 const routes = [
   {
     path: '/',
@@ -20,9 +21,16 @@ const routes = [
     component: RegisterView
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:id',
     name: 'Dashboard',
-    component: DashboardView
+    component: DashboardView,
+    beforeEnter: (to , from , next) => {
+      if(store.state.authenticated == false) {
+        next('/login')
+      } else {
+        next();
+      }
+    }
   }
 ]
 
