@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {login ,  createUser, getUsers ,updateTodo } = require('../controllers/users');
+const {login ,  createUser, getUsers , submitTodo, deleteToDo , changeStatus} = require('../controllers/users');
 
   router.post('/login' , login);
   
@@ -8,6 +8,10 @@ const {login ,  createUser, getUsers ,updateTodo } = require('../controllers/use
 
   router.post('/' , createUser);
 
-  router.patch('/:id' , updateTodo);
+  router.patch('/submit/:id' , submitTodo);
+
+  router.patch('/delete/:id' , deleteToDo)
+
+  router.patch('/changeStatus/:id' , changeStatus);
   
 module.exports = router;
