@@ -17,7 +17,8 @@
           <input v-model="task" type="text" placeholder="Enter Task" class="form-control">
           <button @click="submitTask" class="btn btn-warning rounded-0 mx-2">Submit</button>  
       </div>
-      <table class="table table-bordered mt-5">
+      <div class="d1 my-3  d-flex ">
+      <table class="table table-bordered  mt-5 mb-5">
   <thead>
     <tr class="text-center">
       <th scope="col">Task</th>
@@ -43,9 +44,7 @@
     </tr>
   </tbody>
 </table>
-   <div class="my-3 form-group d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary my-5" @click="saveData" >Save</button>
-    </div>
+</div>
   </div>
 </template>
 
@@ -58,43 +57,47 @@ export default {
           editedTask: null,
           tasks: [],
           availableStatus: ['To-Do' , 'Finished'],
+          id:this.$route.params.id
       }
   },
   methods: {
-      submitTask() {
+        async submitTask() {
           if(this.task.length === 0) return;
           if(this.editedTask === null) {
           this.tasks.push({
               name: this.task,
-              status: 'todo'
+              status: 'ToDo/Finished'
           });
+         let result = await axios.patch("http://localhost:3000/submit/" + this.id , {tasks: this.tasks} )
           this.task = ''
+          console.log(result);
           }else {
               this.tasks[this.editedTask].name = this.task
               this.editedTask = null;
+             await axios.patch("http://localhost:3000/submit/" + this.id , {tasks: this.tasks} );
           }
+        //  console.log(result);
           },
 
-      deleteTask(index) {
+      async deleteTask(index) {
         this.tasks.splice(index , 1);
+        await axios.patch("http://localhost:3000/delete/" + this.id , {ind: index} )
           },
+
       editTask(index) {
-        this.task = this.tasks[index].name
+        this.task = this.tasks[index].name;
         this.editedTask = index;
-          },
+        },  
       
-      changeStatus(index) {
+      async changeStatus(index) {
         let newIndex = this.availableStatus.indexOf(this.tasks[index].status);
         if(++newIndex > 1) {
         newIndex = 0;
       }
-      this.tasks[index].status = this.availableStatus[newIndex];
+        this.tasks[index].status = this.availableStatus[newIndex];
+        await axios.patch("http://localhost:3000/changeStatus/" + this.id , {status: this.tasks[index].status , index:newIndex})
       },
-      async saveData() {
-          let id = this.$route.params.id;
-          await axios.patch("http://localhost:3000/" +id , {tasks: this.tasks});
-      },
-  
+
       async loadData() {
         let id = this.$route.params.id;
       let result = await axios.get("http://localhost:3000/" + id);
@@ -118,6 +121,9 @@ export default {
       }
       .fa fa-pen {
           cursor: pointer;
+      }
+      .table{
+        margin-bottom: 10px;
       }
   </style>>
 
