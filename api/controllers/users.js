@@ -60,25 +60,52 @@ const getUsers = async (req, res) => {
     }
 };
 
-const updateTodo = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const sid = JSON.stringify(id)
-        console.log(typeof (sid));
-        console.log(sid);
-        console.log(id);
-        const tasks = req.body.tasks;
-        console.log(tasks)
-        const user = await User.findById(id)
-        console.log(user)
-        user.tasks = tasks;
-        console.log(user.tasks);
-        const a1 = await user.save();
-        console.log(user)
-        this.tasks = user.tasks
-    } catch (err) { 
-        res.send('ERROR' + err);
-    }
-}
+ const submitTodo = async(req , res) => {
+     try {
+         const id = req.params.id;
+         const task = req.body.tasks;
+         console.log(task)
+         const user = await User.findById(id);
+         user.tasks = task;
+         console.log(user.tasks)
+         await user.save();
+         res.send(user.task)
+        }catch(err) {
+       res.send("ERROR" + err);
+     }
+ };
 
-module.exports = { login, getUsers, createUser, updateTodo };
+ const deleteToDo = async(req , res) => {
+     try{
+         const id = req.params.id;
+         const index = req.body.ind;
+         console.log(index);
+         const user = await User.findById(id);
+         console.log(user.tasks);
+         user.tasks.splice(index , 1);
+         await user.save();
+         console.log(user.tasks);
+     } catch(err) {
+         res.send("ERROR" , err);
+     }
+  }
+
+  const changeStatus = async (req , res) => {
+       try {
+           const id = req.params.id;
+           const {status , index} = req.body;
+           console.log(status);
+           const user = await User.findById(id);
+           user.tasks[index].status = status;
+           await user.save();
+           user.tasks.forEach((t)=>{console.log(t.status)});
+           console.log('---------------');
+       } catch (error) {
+           res.send("ERROR" , error);
+       }
+  }
+ 
+
+
+
+module.exports = { login, getUsers, createUser, submitTodo ,deleteToDo , changeStatus};
